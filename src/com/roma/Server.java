@@ -1,44 +1,26 @@
 package com.roma;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.io.*;
 
 public class Server {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String args[]) throws Exception {
+        ServerSocket ss = new ServerSocket(3333);
+        Socket s = ss.accept();
+        DataInputStream din = new DataInputStream(s.getInputStream());
+        DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        try (ServerSocket server = new ServerSocket(31337)) {
-            System.out.println("[+] Server listening on 31337");
-            Socket client = server.accept();
-            System.out.println("Connection accepted.");
-
-            DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            DataInputStream in = new DataInputStream(client.getInputStream());
-
-            while (!client.isClosed()) {
-                System.out.println("Server reading from channel");
-                String entry = in.readUTF();
-                System.out.println("READ from client message - " + entry);
-                System.out.println("Server try writing to channel");
-
-                if (entry.equalsIgnoreCase("quit")) {
-                    System.out.println("Client initialize connections suicide ...");
-                    out.writeUTF("Server reply - " + entry + " - OK");
-                    out.flush();
-                    break;
-                }
-                out.writeUTF("Server reply - " + entry + " - OK");
-                out.flush();
-            }
-            System.out.println("Client disconnected");
-            in.close();
-            out.close();
-            client.close();
-            System.out.println("Closing connections & channels - DONE.");
-        } catch (IOException e) {
-            e.printStackTrace();
+        String str = "", str2 = "";
+        while (!str.equals("stop")) {
+            str = din.readUTF();
+            System.out.println("client says: " + str);
+            str2 = br.readLine();
+            dout.writeUTF(str2);
+            dout.flush();
         }
+        din.close();
+        s.close();
+        ss.close();
     }
 }
