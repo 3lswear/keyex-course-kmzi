@@ -14,7 +14,7 @@ public class Server {
 
     public static void main(String args[]) throws Exception {
         ServerSocket ss = new ServerSocket(port);
-        System.out.println("[+] Listening on " + port);
+        System.out.println("[+] Listening on port " + port);
         Socket s = ss.accept();
         System.out.println("[+] Connection accepted");
 
@@ -29,9 +29,11 @@ public class Server {
         byte[] foreignKey;
         byte[] encryptedMsg = new byte[0];
 
-        System.out.println("[+] Recieving pubkey...");
+        System.out.println("[+] Receiving pubkey...");
         foreignKey = receiveBytes(din);
-//        System.out.println("recieved pubkey ->" + new String(foreignKey));
+//        System.out.println("received pubkey ->" + new String(foreignKey));
+        if (foreignKey.length > 0)
+            System.out.println("[+] Successfully received pubkey!");
 
         System.out.println("[+] Sending pubkey...");
 //        System.out.println("my pubkey: " + new String(publicKey));
@@ -40,22 +42,21 @@ public class Server {
         String recstr = "", sendstr = "";
         while (!recstr.equals("stop") && !sendstr.equals("stop")) {
             encryptedMsg = receiveBytes(din);
-            System.out.print("[+] Recieved encrypted message: ");
+            System.out.print("[+] Received encrypted message: ");
             printHex(encryptedMsg);
             recstr = new String(decrypt(privateKey, encryptedMsg));
-            System.out.println("[+] Client\'s response: " + recstr);
+            System.out.println("[+] Bob\'s response: " + recstr);
 
-            System.out.print("[server] Send a message -> ");
+            System.out.print("[Alice] Send a message -> ");
             sendstr = br.readLine();
-
             encryptedMsg = encrypt(foreignKey, sendstr.getBytes(StandardCharsets.UTF_8));
-            System.out.println("[+] Encrypting message: ");
-            printHex(encryptedMsg);
 
             sendBytes(encryptedMsg, dout);
+            System.out.print("[+] Sent encrypted message: ");
+            printHex(encryptedMsg);
         }
 
-        System.out.println("[+] Connection aborted by user");
+        System.out.println("[x] Connection aborted by user");
         din.close();
         s.close();
         ss.close();

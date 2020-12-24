@@ -16,7 +16,7 @@ public class Client {
     public static void main(String args[]) throws Exception {
 
         Socket s = new Socket("localhost", port);
-        System.out.println("[+] Connected to " + port);
+        System.out.println("[+] Connected to port " + port);
 
         DataInputStream din = new DataInputStream(s.getInputStream());
         DataOutputStream dout = new DataOutputStream(s.getOutputStream());
@@ -33,30 +33,31 @@ public class Client {
 //        System.out.println("my pubkey: " + new String(publicKey));
         sendBytes(publicKey, dout);
 
-        System.out.println("[+] Recieving pubkey...");
+        System.out.println("[+] Receiving pubkey...");
         foreignKey = receiveBytes(din);
-//        System.out.println("recieved pubkey ->" + new String(foreignKey));
+//        System.out.println("received pubkey ->" + new String(foreignKey));
+        if (foreignKey.length > 0)
+            System.out.println("[+] Successfully received pubkey!");
 
         String sendstr = "";
         String recstr = "";
         while (!recstr.equals("stop") && !sendstr.equals("stop")) {
-            System.out.print("[client] Send a message -> ");
+            System.out.print("[Bob] Send a message -> ");
             sendstr = br.readLine();
-
             encryptedMsg = encrypt(foreignKey, sendstr.getBytes(StandardCharsets.UTF_8));
-            System.out.println("[+] Encrypting message: ");
-            printHex(encryptedMsg);
 
             sendBytes(encryptedMsg, dout);
+            System.out.print("[+] Sent encrypted message: ");
+            printHex(encryptedMsg);
 
             encryptedMsg = receiveBytes(din);
-            System.out.print("[+] Recieved encrypted message: ");
+            System.out.print("[+] Received encrypted message: ");
             printHex(encryptedMsg);
             recstr = new String(decrypt(privateKey, encryptedMsg));
-            System.out.println("[+] Client\'s response: " + recstr);
+            System.out.println("[+] Alice\'s response: " + recstr);
         }
 
-        System.out.println("[+] Connection aborted by user");
+        System.out.println("[x] Connection aborted by user");
         dout.close();
         s.close();
     }

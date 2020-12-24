@@ -58,8 +58,7 @@ public class CryptoUtil {
         // 512 is keysize
         keyGen.initialize(512, random);
 
-        KeyPair generateKeyPair = keyGen.generateKeyPair();
-        return generateKeyPair;
+        return keyGen.generateKeyPair();
     }
 
     public void main(String[] args) throws Exception {
@@ -79,10 +78,11 @@ public class CryptoUtil {
     }
 
     public static void printHex(byte[] bytes) {
+        System.out.print("[");
         for (byte b : bytes) {
             System.out.printf("%X", b);
         }
-        System.out.println();
+        System.out.println("]");
     }
 
     public static byte[] receiveBytes(DataInputStream din) throws IOException {
