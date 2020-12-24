@@ -1,5 +1,9 @@
 package com.roma;
 
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -16,8 +20,9 @@ import javax.crypto.Cipher;
 public class CryptoUtil {
 
     private static final String ALGORITHM = "RSA";
+    public static final int port = 31337;
 
-    public byte[] encrypt(byte[] publicKey, byte[] inputData) throws Exception {
+    public static byte[] encrypt(byte[] publicKey, byte[] inputData) throws Exception {
 
         PublicKey key = KeyFactory.getInstance(ALGORITHM)
                 .generatePublic(new X509EncodedKeySpec(publicKey));
@@ -30,7 +35,7 @@ public class CryptoUtil {
         return encryptedBytes;
     }
 
-    public byte[] decrypt(byte[] privateKey, byte[] inputData)
+    public static byte[] decrypt(byte[] privateKey, byte[] inputData)
             throws Exception {
 
         PrivateKey key = KeyFactory.getInstance(ALGORITHM)
@@ -44,7 +49,7 @@ public class CryptoUtil {
         return decryptedBytes;
     }
 
-    public KeyPair generateKeyPair()
+    public static KeyPair generateKeyPair()
             throws NoSuchAlgorithmException, NoSuchProviderException {
 
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM);
@@ -78,6 +83,21 @@ public class CryptoUtil {
             System.out.printf("%X", b);
         }
         System.out.println();
+    }
+    public static byte[] receiveBytes(DataInputStream din) throws IOException {
+        int msgLen = din.readInt();
+        if (msgLen > 0) {
+            byte[] message = new byte[msgLen] ;
+            din.readFully(message, 0, msgLen); // read the message
+            return (message);
+        }
+        else
+            return new byte[0];
+    }
+    public static void sendBytes(byte[] message, DataOutputStream dout) throws IOException {
+        dout.writeInt(message.length);
+        dout.write(message);
+        dout.flush();
     }
 
 }
