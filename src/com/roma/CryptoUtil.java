@@ -1,7 +1,6 @@
 package com.roma;
 
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.KeyFactory;
@@ -71,29 +70,31 @@ public class CryptoUtil {
         byte[] privateKey = generateKeyPair.getPrivate().getEncoded();
 
         byte[] encryptedData = encrypt(publicKey,
-                "hi this is Visruth here".getBytes());
+                "sample message".getBytes());
 
         byte[] decryptedData = decrypt(privateKey, encryptedData);
 
         System.out.println(new String(decryptedData));
 
     }
+
     public static void printHex(byte[] bytes) {
-        for (byte b: bytes) {
+        for (byte b : bytes) {
             System.out.printf("%X", b);
         }
         System.out.println();
     }
+
     public static byte[] receiveBytes(DataInputStream din) throws IOException {
         int msgLen = din.readInt();
         if (msgLen > 0) {
-            byte[] message = new byte[msgLen] ;
+            byte[] message = new byte[msgLen];
             din.readFully(message, 0, msgLen); // read the message
             return (message);
-        }
-        else
+        } else
             return new byte[0];
     }
+
     public static void sendBytes(byte[] message, DataOutputStream dout) throws IOException {
         dout.writeInt(message.length);
         dout.write(message);
