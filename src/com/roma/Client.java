@@ -1,12 +1,9 @@
 package com.roma;
 
-import javax.crypto.Cipher;
 import java.net.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 
 import static com.roma.CryptoUtil.*;
 
@@ -30,12 +27,10 @@ public class Client {
         byte[] encryptedMsg = new byte[0];
 
         System.out.println("[+] Sending pubkey...");
-//        System.out.println("my pubkey: " + new String(publicKey));
         sendBytes(publicKey, dout);
 
         System.out.println("[+] Receiving pubkey...");
         foreignKey = receiveBytes(din);
-//        System.out.println("received pubkey ->" + new String(foreignKey));
         if (foreignKey.length > 0)
             System.out.println("[+] Successfully received pubkey!");
 
